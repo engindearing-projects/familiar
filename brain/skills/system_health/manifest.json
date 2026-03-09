@@ -1,0 +1,27 @@
+{
+  "name": "system_health",
+  "version": "1.0.0",
+  "description": "Check system health — CPU load, memory usage, disk space, and uptime in a single summary.",
+  "author": "familiar-learner",
+  "parameters": {
+    "verbose": {
+      "type": "boolean",
+      "description": "Include per-disk and per-CPU breakdown",
+      "required": false
+    }
+  },
+  "sandbox": {
+    "allowNetwork": false,
+    "allowFileWrite": false,
+    "allowShell": true,
+    "maxExecutionMs": 10000
+  },
+  "tags": [
+    "system",
+    "monitoring",
+    "health"
+  ],
+  "installedAt": "2026-03-02T00:30:19.636Z",
+  "installedFrom": "system-health.json",
+  "upgradedAt": "2026-03-06T11:08:06.032Z"
+}

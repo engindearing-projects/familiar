@@ -1,0 +1,73 @@
+{
+  "name": "peer-sync",
+  "version": "1.0.0",
+  "description": "Peer reflection exchange between two machines. Reads own reflections, evaluates peer's work, writes constructive feedback, and syncs with the other machine.",
+  "author": "familiar",
+
+  "schedule": {
+    "cron": "0 6-23 * * *",
+    "tz": "America/Los_Angeles",
+    "runOnStart": false,
+    "maxDuration": 600
+  },
+
+  "tools": ["bash", "read_file", "write_file", "grep", "glob", "memory_search"],
+
+  "phases": [
+    {
+      "name": "observe",
+      "mode": "agentic",
+      "prompt": "PEER-SYNC OBSERVE PHASE. Gather reflection and feedback data.\n\n1. Read own recent reflections from {{BRAIN_DIR}}/reflection/ — look for planner cycle summaries, learner outputs, or trainer results\n2. Read peer feedback received from the other machine: `cat {{BRAIN_DIR}}/reflection/peer-reflections.json 2>/dev/null || echo '[]'`\n3. Read own feedback sent to peer: `cat {{BRAIN_DIR}}/reflection/peer-feedback.json 2>/dev/null || echo '[]'`\n4. Read hand state: `cat {{PROJECT_DIR}}/brain/hands/state.json`\n5. Check peer health using WORKER_URL env var: `curl -sf ${WORKER_URL:-http://localhost:18792}/health 2>/dev/null || echo '{\"status\":\"unreachable\"}'`\n\nOutput JSON:\n{\"ownReflections\": [\"latest 3 summaries\"], \"peerReflections\": [\"latest 3 from peer\"], \"peerHealth\": {}, \"handsState\": {\"summary\": \"\"}, \"timestamp\": \"ISO\"}",
+      "timeout": 120,
+      "maxIterations": 6,
+      "maxToolCalls": 10,
+      "onFail": "abort"
+    },
+    {
+      "name": "evaluate",
+      "prompt": "PEER-SYNC EVALUATE PHASE. Score the peer's recent work based on observations.\n\nIf running on the primary machine — evaluate the worker's training quality:\n- Were forge-trainer runs successful? Check benchmark scores and loss curves from peer reflections.\n- Did forge-miner find good pairs? Check pairs_collected metric.\n- Is GPU being utilized well? Check peer health GPU utilization.\n\nIf running on the worker — evaluate the primary machine's decision quality:\n- Were planner decisions good? Check peer reflections for action outcomes.\n- Was system health maintained? Check for service crashes.\n\nOutput JSON:\n{\"peerScore\": 0-10, \"strengths\": [\"what peer is doing well\"], \"improvements\": [\"what could be better\"], \"observations\": [\"notable patterns\"]}",
+      "timeout": 120,
+      "onFail": "skip"
+    },
+    {
+      "name": "reflect",
+      "prompt": "PEER-SYNC REFLECT PHASE. Write constructive feedback for the peer.\n\nBased on the evaluation, write feedback in this format:\n{\"from\": \"primary-or-worker\", \"to\": \"worker-or-primary\", \"observation\": \"what you noticed\", \"suggestion\": \"concrete actionable improvement\", \"confidence\": 0.0-1.0, \"timestamp\": \"ISO\"}\n\nKeep it constructive — this is a peer relationship, not a hierarchy. Both machines are working toward the same goals.",
+      "timeout": 120,
+      "onFail": "skip"
+    },
+    {
+      "name": "sync",
+      "mode": "agentic",
+      "prompt": "PEER-SYNC SYNC PHASE. Exchange feedback with the peer machine.\n\n1. Read the feedback you just wrote from the reflect phase output\n2. POST it to the peer using WORKER_URL env var:\n   `curl -X POST ${WORKER_URL}/peer/reflect -H 'Content-Type: application/json' -d '<feedback JSON>'`\n3. Pull peer's latest feedback: `curl -sf ${WORKER_URL}/peer/feedback`\n4. Save the exchange to {{BRAIN_DIR}}/reflection/peer-feedback-$(date +%Y-%m-%d).json\n5. Write a 1-line summary of the sync result",
+      "timeout": 120,
+      "maxIterations": 5,
+      "maxToolCalls": 8,
+      "cwd": "{{PROJECT_DIR}}",
+      "onFail": "skip"
+    }
+  ],
+
+  "env": {},
+
+  "metrics": {
+    "syncs_completed": { "type": "counter", "description": "Successful peer sync cycles" },
+    "feedback_sent": { "type": "counter", "description": "Feedback items sent to peer" },
+    "feedback_received": { "type": "counter", "description": "Feedback items received from peer" },
+    "peer_score": { "type": "gauge", "description": "Latest peer evaluation score (0-10)" }
+  },
+
+  "guardrails": {
+    "readOnly": false,
+    "networkAccess": true,
+    "maxConcurrent": 1,
+    "approvalRequired": false
+  },
+
+  "state": {
+    "lastCheckpoint": null,
+    "custom": {
+      "syncCount": 0,
+      "lastPeerScore": null
+    }
+  }
+}

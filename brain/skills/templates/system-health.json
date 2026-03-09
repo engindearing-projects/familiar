@@ -1,0 +1,25 @@
+{
+  "name": "system_health",
+  "version": "1.0.0",
+  "description": "Check system health — CPU load, memory usage, disk space, and uptime in a single summary.",
+  "author": "familiar-learner",
+  "dependencies": [],
+  "entryPoint": "index.mjs",
+  "sandbox": {
+    "allowNetwork": false,
+    "allowFileWrite": false,
+    "allowShell": true,
+    "maxExecutionMs": 10000
+  },
+  "parameters": {
+    "verbose": {
+      "type": "boolean",
+      "description": "Include per-disk and per-CPU breakdown",
+      "required": false
+    }
+  },
+  "tags": ["system", "monitoring", "health"],
+  "source": {
+    "code": "import { execSync } from \"node:child_process\";\n\nexport const name = \"system_health\";\nexport const description = \"Check system health — CPU load, memory usage, disk space, and uptime.\";\nexport const parameters = {\n  verbose: { type: \"boolean\", description: \"Include per-disk and per-CPU breakdown\" }\n};\n\nexport async function execute(args) {\n  const verbose = args?.verbose || false;\n  const parts = [];\n\n  try {\n    const uptime = execSync(\"uptime\", { timeout: 5000, stdio: [\"ignore\", \"pipe\", \"pipe\"] }).toString().trim();\n    parts.push(`Uptime: ${uptime}`);\n  } catch (e) {\n    parts.push(`Uptime: error (${e.message})`);\n  }\n\n  try {\n    const mem = execSync(\"vm_stat | head -5\", { timeout: 5000, stdio: [\"ignore\", \"pipe\", \"pipe\"] }).toString().trim();\n    parts.push(`Memory:\\n${mem}`);\n  } catch (e) {\n    parts.push(`Memory: error (${e.message})`);\n  }\n\n  try {\n    const dfFlag = verbose ? \"\" : \"-h /\";\n    const disk = execSync(`df -h ${dfFlag}`, { timeout: 5000, stdio: [\"ignore\", \"pipe\", \"pipe\"] }).toString().trim();\n    parts.push(`Disk:\\n${disk}`);\n  } catch (e) {\n    parts.push(`Disk: error (${e.message})`);\n  }\n\n  return parts.join(\"\\n\\n\");\n}\n"
+  }
+}

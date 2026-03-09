@@ -1,0 +1,30 @@
+{
+  "name": "git_summary",
+  "version": "1.0.0",
+  "description": "Summarize git repository status — branch, recent commits, uncommitted changes, and stash count.",
+  "author": "familiar-learner",
+  "dependencies": [],
+  "entryPoint": "index.mjs",
+  "sandbox": {
+    "allowNetwork": false,
+    "allowFileWrite": false,
+    "allowShell": true,
+    "maxExecutionMs": 10000
+  },
+  "parameters": {
+    "path": {
+      "type": "string",
+      "description": "Path to the git repository (default: current directory)",
+      "required": false
+    },
+    "commitCount": {
+      "type": "number",
+      "description": "Number of recent commits to show (default: 5)",
+      "required": false
+    }
+  },
+  "tags": ["git", "vcs", "development"],
+  "source": {
+    "code": "import { execSync } from \"node:child_process\";\nimport { existsSync } from \"node:fs\";\nimport { resolve } from \"node:path\";\n\nexport const name = \"git_summary\";\nexport const description = \"Summarize git repository status — branch, recent commits, uncommitted changes, stash count.\";\nexport const parameters = {\n  path: { type: \"string\", description: \"Path to the git repository\" },\n  commitCount: { type: \"number\", description: \"Number of recent commits to show (default: 5)\" }\n};\n\nfunction git(cmd, cwd) {\n  return execSync(`git ${cmd}`, {\n    cwd,\n    timeout: 5000,\n    stdio: [\"ignore\", \"pipe\", \"pipe\"],\n  }).toString().trim();\n}\n\nexport async function execute(args) {\n  const repoPath = resolve(args?.path || process.cwd());\n  const count = args?.commitCount || 5;\n\n  if (!existsSync(resolve(repoPath, \".git\"))) {\n    return `Not a git repository: ${repoPath}`;\n  }\n\n  const parts = [];\n\n  try {\n    const branch = git(\"branch --show-current\", repoPath);\n    parts.push(`Branch: ${branch || \"(detached HEAD)\"}`);\n  } catch { parts.push(\"Branch: unknown\"); }\n\n  try {\n    const status = git(\"status --short\", repoPath);\n    const lines = status ? status.split(\"\\n\") : [];\n    parts.push(`Changes: ${lines.length} file(s) modified`);\n    if (lines.length > 0 && lines.length <= 10) {\n      parts.push(lines.map(l => `  ${l}`).join(\"\\n\"));\n    }\n  } catch { parts.push(\"Changes: unknown\"); }\n\n  try {\n    const log = git(`log --oneline -${count}`, repoPath);\n    parts.push(`Recent commits:\\n${log}`);\n  } catch { parts.push(\"Commits: none or error\"); }\n\n  try {\n    const stash = git(\"stash list\", repoPath);\n    const stashCount = stash ? stash.split(\"\\n\").length : 0;\n    if (stashCount > 0) parts.push(`Stashes: ${stashCount}`);\n  } catch { /* no stash */ }\n\n  return parts.join(\"\\n\\n\");\n}\n"
+  }
+}

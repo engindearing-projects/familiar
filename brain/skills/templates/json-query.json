@@ -1,0 +1,30 @@
+{
+  "name": "json_query",
+  "version": "1.0.0",
+  "description": "Read a JSON file and extract values using dot-notation paths (e.g. 'users.0.name' or 'config.port').",
+  "author": "familiar-learner",
+  "dependencies": [],
+  "entryPoint": "index.mjs",
+  "sandbox": {
+    "allowNetwork": false,
+    "allowFileWrite": false,
+    "allowShell": false,
+    "maxExecutionMs": 5000
+  },
+  "parameters": {
+    "file": {
+      "type": "string",
+      "description": "Absolute path to the JSON file",
+      "required": true
+    },
+    "path": {
+      "type": "string",
+      "description": "Dot-notation path to extract (e.g. 'data.items.0.name'). Omit to return the whole object.",
+      "required": false
+    }
+  },
+  "tags": ["json", "query", "data", "files"],
+  "source": {
+    "code": "import { readFileSync } from \"node:fs\";\nimport { resolve } from \"node:path\";\n\nexport const name = \"json_query\";\nexport const description = \"Read a JSON file and extract values using dot-notation paths.\";\nexport const parameters = {\n  file: { type: \"string\", description: \"Absolute path to the JSON file\", required: true },\n  path: { type: \"string\", description: \"Dot-notation path to extract (e.g. 'data.items.0.name')\" }\n};\n\nexport async function execute(args) {\n  if (!args?.file) return \"Error: file parameter is required\";\n\n  const filePath = resolve(args.file);\n  let data;\n  try {\n    const raw = readFileSync(filePath, \"utf-8\");\n    data = JSON.parse(raw);\n  } catch (e) {\n    return `Error reading/parsing ${filePath}: ${e.message}`;\n  }\n\n  if (!args.path) {\n    return JSON.stringify(data, null, 2).slice(0, 8000);\n  }\n\n  const segments = args.path.split(\".\");\n  let current = data;\n  for (const seg of segments) {\n    if (current === null || current === undefined) {\n      return `Path '${args.path}' — hit null/undefined at '${seg}'`;\n    }\n    if (Array.isArray(current) && /^\\d+$/.test(seg)) {\n      current = current[parseInt(seg, 10)];\n    } else if (typeof current === \"object\") {\n      current = current[seg];\n    } else {\n      return `Path '${args.path}' — '${seg}' is not traversable (value is ${typeof current})`;\n    }\n  }\n\n  if (current === undefined) return `Path '${args.path}' — not found`;\n  if (typeof current === \"object\") return JSON.stringify(current, null, 2).slice(0, 8000);\n  return String(current);\n}\n"
+  }
+}

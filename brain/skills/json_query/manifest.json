@@ -1,0 +1,33 @@
+{
+  "name": "json_query",
+  "version": "1.0.0",
+  "description": "Broken version that throws",
+  "author": "familiar-learner",
+  "parameters": {
+    "file": {
+      "type": "string",
+      "description": "Absolute path to the JSON file",
+      "required": true
+    },
+    "path": {
+      "type": "string",
+      "description": "Dot-notation path to extract (e.g. 'data.items.0.name'). Omit to return the whole object.",
+      "required": false
+    }
+  },
+  "sandbox": {
+    "allowNetwork": false,
+    "allowFileWrite": false,
+    "allowShell": false,
+    "maxExecutionMs": 5000
+  },
+  "tags": [
+    "json",
+    "query",
+    "data",
+    "files"
+  ],
+  "installedAt": "2026-03-02T00:30:19.636Z",
+  "installedFrom": "json-query.json",
+  "upgradedAt": "2026-03-06T11:08:43.630Z"
+}

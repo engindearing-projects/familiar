@@ -1,0 +1,97 @@
+{
+  "name": "planner",
+  "version": "1.0.0",
+  "description": "Autonomous decision-making loop — reads goals, evaluates system state, decides what to work on, and either delegates to other hands or acts directly. Runs every 30 minutes.",
+  "author": "familiar",
+
+  "schedule": {
+    "cron": "0,30 6-23 * * *",
+    "tz": "America/Los_Angeles",
+    "runOnStart": true,
+    "maxDuration": 1800
+  },
+
+  "triggers": [
+    {
+      "type": "hand_complete",
+      "hand": "forge-trainer",
+      "onlyOnSuccess": true
+    },
+    {
+      "type": "hand_complete",
+      "hand": "forge-miner",
+      "onlyOnSuccess": true
+    },
+    {
+      "type": "threshold",
+      "metric": "forge-miner.pairs_collected",
+      "above": 100,
+      "pollInterval": 600
+    }
+  ],
+
+  "tools": ["bash", "read_file", "write_file", "edit_file", "grep", "glob", "memory_search", "memory_store", "memory_recent"],
+
+  "phases": [
+    {
+      "name": "observe",
+      "mode": "agentic",
+      "prompt": "PLANNER OBSERVE PHASE. You are the autonomous planner. Gather current system state:\n\n1. Read active goals from ~/.familiar/goals.json\n2. Read hand status from {{PROJECT_DIR}}/brain/hands/state.json\n3. Check forge stats: run `bun -e 'try { const s = (await import(\"{{PROJECT_DIR}}/trainer/forge-db.js\")).getForgeStats(); console.log(JSON.stringify(s)); } catch(e) { console.log(\"forge unavailable\"); }'`\n4. Check recent memory observations: use memory_search for recent entries\n5. Check system health: run the appropriate service check for your OS (launchctl list | grep familiar on macOS, systemctl list-units 'familiar*' on Linux)\n6. Check if Ollama is responsive: run `curl -sf http://localhost:11434/api/tags | head -c 200`\n7. If WORKER_URL is configured, check worker health: run `curl -sf $WORKER_URL/health`\n\nOutput a JSON summary:\n{\"goals\": [{\"id\", \"title\", \"priority\", \"progress\", \"lastUpdated\"}], \"hands\": {\"name\": \"status/lastRun\"}, \"forge\": {\"totalPairs\", \"unusedPairs\", \"lastTraining\"}, \"systemHealth\": {\"gateway\": \"ok/down\", \"ollama\": \"ok/down\", \"services\": N}, \"worker\": {\"status\": \"ok/down/unconfigured\"}, \"timestamp\": \"ISO\"}",
+      "timeout": 180,
+      "maxIterations": 8,
+      "maxToolCalls": 15,
+      "onFail": "abort"
+    },
+    {
+      "name": "decide",
+      "prompt": "PLANNER DECIDE PHASE. Given the observation from the previous phase, decide what to do next.\n\nPriority framework:\n1. System health issues (services down, Ollama stuck) — fix immediately\n2. Forge pipeline stalled — trigger mining or training\n3. Hands overdue or failing — investigate and fix\n4. Goal with highest priority that needs attention — check progress, take action\n5. Nothing urgent — update goal progress and report healthy\n\nApproval tiers:\n- auto: read-only ops, status checks, running existing hands, goal updates, memory ops\n- notify: file writes within the project, hand management, forge ops\n- approve: git push/merge/force to main, deploy to production, creating new hands, system restart\n\nOutput JSON:\n{\"action\": \"what to do\", \"type\": \"hand_run|delegate|tool_loop|goal_update|system_fix|nothing\", \"target\": \"hand or goal\", \"reason\": \"why this is highest priority\", \"risk\": \"low|medium|high\", \"approvalTier\": \"auto|notify|approve\"}",
+      "timeout": 180,
+      "onFail": "skip"
+    },
+    {
+      "name": "act",
+      "mode": "agentic",
+      "prompt": "PLANNER ACT PHASE. Execute the decision from the previous phase.\n\nBased on the decision type:\n- hand_run: Run the specified hand with `bun {{PROJECT_DIR}}/brain/hands/runner.mjs <hand-name>`\n- delegate: If WORKER_URL is set, delegate GPU-heavy hands to the remote worker: `curl -X POST $WORKER_URL/task/run -H 'Content-Type: application/json' -d '{\"hand\": \"<name>\"}'`. Use for: forge-trainer, forge-miner, researcher.\n- tool_loop: Accomplish the task directly using available tools (read files, run commands, etc.)\n- goal_update: Update goal progress in ~/.familiar/goals.json — read it, modify the relevant goal, write it back\n- system_fix: Diagnose and fix (restart services, clear stuck states)\n- nothing: System is healthy — update goal lastChecked timestamps in ~/.familiar/goals.json\n\nIf Telegram is configured (TELEGRAM_BOT_TOKEN in env), send a concise status update after every action.\n\nDo NOT push or merge to git main, deploy to production, or restart system services without approval.\n\nAfter acting, update the relevant goal's progress and metrics in ~/.familiar/goals.json.",
+      "timeout": 900,
+      "maxIterations": 15,
+      "maxToolCalls": 30,
+      "cwd": "{{PROJECT_DIR}}",
+      "onFail": "skip"
+    },
+    {
+      "name": "reflect",
+      "prompt": "PLANNER REFLECT PHASE. Summarize this planning cycle.\n\nOutput JSON:\n{\"observation\": \"1-sentence summary of system state\", \"decision\": \"what was decided and why\", \"action\": \"what was done (or deferred)\", \"outcome\": \"result of action\", \"lesson\": \"what to remember for next cycle\", \"nextPriority\": \"what to focus on next cycle\"}\n\nIf WORKER_URL is configured, send the reflection to the peer:\ncurl -X POST $WORKER_URL/peer/reflect -H 'Content-Type: application/json' -d '<your reflection JSON>'",
+      "timeout": 120,
+      "onFail": "skip"
+    }
+  ],
+
+  "env": {},
+
+  "metrics": {
+    "decisions_made": { "type": "counter", "description": "Total planning decisions" },
+    "actions_taken": { "type": "counter", "description": "Actions executed (not deferred)" },
+    "actions_deferred": { "type": "counter", "description": "Actions sent for approval" },
+    "goals_progressed": { "type": "counter", "description": "Goals that had progress updates" },
+    "hands_triggered": { "type": "counter", "description": "Other hands triggered by planner" },
+    "system_fixes": { "type": "counter", "description": "System health issues resolved" },
+    "nothing_cycles": { "type": "counter", "description": "Cycles where no action was needed" },
+    "run_duration": { "type": "gauge", "description": "Seconds per planning cycle" }
+  },
+
+  "guardrails": {
+    "readOnly": false,
+    "networkAccess": true,
+    "maxConcurrent": 1,
+    "approvalRequired": false
+  },
+
+  "state": {
+    "lastCheckpoint": null,
+    "custom": {
+      "cycleCount": 0,
+      "lastDecision": null,
+      "consecutiveNothings": 0
+    }
+  }
+}

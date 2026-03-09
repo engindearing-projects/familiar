@@ -1,0 +1,70 @@
+{
+  "name": "forge-miner",
+  "version": "1.0.0",
+  "description": "Mines training data from GitHub PRs — ground-truth diffs scored against Gemini and local model one-shots",
+  "author": "familiar",
+
+  "schedule": {
+    "cron": "0 4,12,20 * * *",
+    "tz": "America/Los_Angeles",
+    "runOnStart": false,
+    "maxDuration": 7200
+  },
+
+  "tools": ["bash", "read_file"],
+
+  "phases": [
+    {
+      "name": "check-stats",
+      "mode": "agentic",
+      "prompt": "Check the forge DB stats. Run: bun -e 'import { getForgeStats } from \"{{PROJECT_DIR}}/trainer/forge-db.js\"; console.log(JSON.stringify(getForgeStats()));' — report total pairs, unused pairs, and last run info.",
+      "timeout": 30,
+      "onFail": "skip"
+    },
+    {
+      "name": "mine-ground-truth",
+      "mode": "agentic",
+      "prompt": "Run the ground-truth mining pipeline: cd {{PROJECT_DIR}}/trainer && bun mine-ground-truth.mjs. This mines merged PRs from GitHub repos, uses the real merged diff as gold standard, and scores Gemini Flash and local model one-shots against it. Report how many new pairs were collected.",
+      "timeout": 3600,
+      "onFail": "abort"
+    },
+    {
+      "name": "mine-expanded",
+      "mode": "agentic",
+      "prompt": "Run the expanded mining pipeline: cd {{PROJECT_DIR}}/trainer && bun mine-expanded.mjs. This mines additional commit-level data from repos. Report how many new pairs were collected.",
+      "timeout": 3600,
+      "onFail": "skip"
+    },
+    {
+      "name": "report",
+      "prompt": "Summarize the mining run. Report: total new pairs collected across both phases, total pairs now in forge DB, any errors encountered. If the forge-auto daemon has enough unused pairs (100+), note that training will trigger automatically.",
+      "timeout": 30,
+      "onFail": "skip"
+    }
+  ],
+
+  "env": {
+    "GEMINI_API_KEY": { "required": true },
+    "GITHUB_TOKEN": { "required": false }
+  },
+
+  "metrics": {
+    "pairs_collected": { "type": "counter", "description": "New training pairs mined this run" },
+    "ground_truth_pairs": { "type": "counter", "description": "Ground-truth pairs from merged PRs" },
+    "expanded_pairs": { "type": "counter", "description": "Expanded pairs from commits" },
+    "run_duration": { "type": "gauge", "description": "Seconds per run" },
+    "errors": { "type": "counter", "description": "Errors encountered" }
+  },
+
+  "guardrails": {
+    "readOnly": false,
+    "networkAccess": true,
+    "maxConcurrent": 1,
+    "approvalRequired": false
+  },
+
+  "state": {
+    "lastCheckpoint": null,
+    "custom": {}
+  }
+}

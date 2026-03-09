@@ -1,0 +1,98 @@
+{
+  "name": "researcher",
+  "version": "2.0.0",
+  "description": "Autonomous research and build — studies capabilities, writes code, tests it, and ships improvements to Familiar every night",
+  "author": "familiar",
+
+  "schedule": {
+    "cron": "0 3,15 * * *",
+    "tz": "America/Los_Angeles",
+    "runOnStart": false,
+    "maxDuration": 3600
+  },
+
+  "triggers": [
+    {
+      "type": "hand_complete",
+      "hand": "forge-trainer",
+      "onlyOnSuccess": true
+    }
+  ],
+
+  "tools": ["bash", "read_file", "write_file", "edit_file", "grep", "glob"],
+
+  "phases": [
+    {
+      "name": "load-context",
+      "mode": "agentic",
+      "prompt": "Read the progress log at {{PROJECT_DIR}}/brain/ideas/openfang-integration.jsonl to see what's been done so far. Read {{PROJECT_DIR}}/memory/openfang-research.md for the research roadmap. Read the Hands state at {{PROJECT_DIR}}/brain/hands/state.json. Based on completed work, identify the NEXT priority to build. Priorities in order: 1) Hands system (DONE), 2) Knowledge graph / entity extraction, 3) CRAAP source evaluation for learner, 4) Skill installation pipeline from templates, 5) Workflow engine for chaining tasks, 6) Event-driven triggers (not just cron). Output a clear statement of what to build next.",
+      "timeout": 120,
+      "maxIterations": 5,
+      "maxToolCalls": 10,
+      "onFail": "abort"
+    },
+    {
+      "name": "study",
+      "mode": "agentic",
+      "prompt": "Study the capability identified in the previous phase. Read relevant existing code in {{PROJECT_DIR}}/ to understand current patterns. Check OpenFang's approach by running {{HOME}}/.openfang/bin/openfang --help and relevant subcommands. Read any existing files that relate to the feature. Understand the gap between what exists and what needs to be built. Output a specific build plan: which files to create or modify, what each should contain, and how it integrates with existing code.",
+      "timeout": 300,
+      "maxIterations": 10,
+      "maxToolCalls": 20,
+      "onFail": "abort"
+    },
+    {
+      "name": "build",
+      "mode": "agentic",
+      "prompt": "Implement the capability from the study phase. Write real code — create new files or modify existing ones using write_file and edit_file tools. Follow existing patterns in the codebase (ES modules, Bun runtime, no npm dependencies unless already used). Keep changes focused and minimal — one capability per night. Write clean, working code. After writing, read back what you wrote to verify it looks correct.",
+      "timeout": 600,
+      "maxIterations": 15,
+      "maxToolCalls": 30,
+      "cwd": "{{PROJECT_DIR}}",
+      "onFail": "skip"
+    },
+    {
+      "name": "test",
+      "mode": "agentic",
+      "prompt": "Test what you just built. Run the code with bun to check for syntax errors and basic functionality. If you created a module, import it and call its main functions. If you created a CLI tool, run it with --help or a simple test case. Fix any bugs you find. If tests pass, the build is good. If they fail, attempt to fix the code (up to 2 fix attempts).",
+      "timeout": 300,
+      "maxIterations": 10,
+      "maxToolCalls": 20,
+      "cwd": "{{PROJECT_DIR}}",
+      "onFail": "skip"
+    },
+    {
+      "name": "report",
+      "mode": "agentic",
+      "prompt": "Write a progress entry. Use write_file to APPEND (read first, then write full content) to {{PROJECT_DIR}}/brain/ideas/openfang-integration.jsonl — add a single JSON line: {\"date\": \"YYYY-MM-DD\", \"phase\": \"build\", \"topic\": \"what was built\", \"files_changed\": [\"list of files created or modified\"], \"status\": \"ok or error\", \"next\": \"what to build next iteration\"}. Output a concise summary of what was accomplished for the Telegram notification.",
+      "timeout": 60,
+      "maxIterations": 5,
+      "maxToolCalls": 10,
+      "onFail": "skip"
+    }
+  ],
+
+  "env": {},
+
+  "metrics": {
+    "topics_studied": { "type": "counter", "description": "Research topics completed" },
+    "capabilities_built": { "type": "counter", "description": "New capabilities implemented" },
+    "files_changed": { "type": "counter", "description": "Files created or modified" },
+    "tool_calls": { "type": "counter", "description": "Total tool calls made" },
+    "run_duration": { "type": "gauge", "description": "Seconds per research session" }
+  },
+
+  "guardrails": {
+    "readOnly": false,
+    "networkAccess": true,
+    "maxConcurrent": 1,
+    "approvalRequired": false
+  },
+
+  "state": {
+    "lastCheckpoint": null,
+    "custom": {
+      "currentTopic": "knowledge-graph",
+      "completedTopics": ["hands-system"]
+    }
+  }
+}

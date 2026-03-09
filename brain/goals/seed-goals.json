@@ -1,0 +1,23 @@
+[
+  {
+    "id": "keep-services-healthy",
+    "title": "Keep all services running and healthy",
+    "description": "Monitor gateway, proxy, and Ollama. Restart any that crash. Alert via Telegram if configured.",
+    "priority": "high",
+    "status": "active"
+  },
+  {
+    "id": "maintain-forge-pipeline",
+    "title": "Maintain the Forge training pipeline",
+    "description": "Mine training data from merged PRs and open-source repos. Ensure the collector, trainer, and evaluator run on schedule.",
+    "priority": "high",
+    "status": "active"
+  },
+  {
+    "id": "improve-local-model",
+    "title": "Improve local model benchmark score",
+    "description": "Track benchmark scores after each training run. Deploy new models only if they improve on the previous version.",
+    "priority": "medium",
+    "status": "active"
+  }
+]

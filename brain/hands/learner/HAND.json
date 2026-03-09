@@ -1,0 +1,80 @@
+{
+  "name": "learner",
+  "version": "1.0.0",
+  "description": "Daily learning cycle — reflects on conversations, identifies gaps, proposes skills, generates ideas, and updates RAG",
+  "author": "familiar",
+
+  "schedule": {
+    "cron": "0 5,17 * * *",
+    "tz": "America/Los_Angeles",
+    "runOnStart": false,
+    "maxDuration": 300
+  },
+
+  "tools": ["read_file", "write_file", "bash"],
+
+  "phases": [
+    {
+      "name": "reflect",
+      "prompt": "Analyze yesterday's conversation traces from {{PROJECT_DIR}}/trainer/data/traces/. Count conversations, identify tool usage patterns, and find failures. Output 1-3 specific capability gaps as JSON: [{\"gap\": \"description\", \"impact\": \"high|medium|low\"}]",
+      "timeout": 60,
+      "onFail": "skip"
+    },
+    {
+      "name": "learn",
+      "prompt": "Take the highest-impact gap from the REFLECT phase and research it. Provide practical, actionable information: what the capability involves, how to implement it, and a concrete example. Keep it under 500 words.",
+      "timeout": 60,
+      "onFail": "skip"
+    },
+    {
+      "name": "evaluate",
+      "mode": "agentic",
+      "prompt": "Take the LEARN phase output from the previous phase results. Write it to /tmp/learner-eval.txt using the write_file tool. Then run: bun {{PROJECT_DIR}}/brain/rag/craap.mjs file /tmp/learner-eval.txt\n\nOutput JSON: {\"score\": <0.0-1.0>, \"recommendation\": \"ingest|review|reject\", \"shouldInstall\": <true unless recommendation is reject>}",
+      "timeout": 60,
+      "maxIterations": 3,
+      "maxToolCalls": 5,
+      "onFail": "skip"
+    },
+    {
+      "name": "install",
+      "prompt": "Check the EVALUATE phase result. If it output shouldInstall=false or recommendation=reject, output: {\"canImplement\": false, \"reason\": \"CRAAP evaluation rejected source — score too low\"}. Otherwise, based on the LEARN findings, design a skill module. Output JSON: {\"name\": \"skill_name\", \"description\": \"what it does\", \"parameters\": {...}, \"canImplement\": true/false}. If implementable, generate a JavaScript ES module exporting { name, description, parameters, execute }. The skill must be read-only and use only Node.js built-ins.",
+      "timeout": 90,
+      "onFail": "skip"
+    },
+    {
+      "name": "ideate",
+      "prompt": "Generate ONE actionable idea weighted by humanitarian impact. Categories: personal, family, community, global, humanitarian. Output JSON: {\"category\": \"...\", \"title\": \"...\", \"description\": \"2-3 sentences\", \"impact\": \"high|medium|low\"}",
+      "timeout": 30,
+      "onFail": "skip"
+    },
+    {
+      "name": "ingest",
+      "prompt": "Run the RAG ingest pipeline: bun {{PROJECT_DIR}}/brain/rag/ingest.mjs. This scans memory files for new or updated content and adds embeddings to the knowledge base.",
+      "timeout": 120,
+      "onFail": "skip"
+    }
+  ],
+
+  "env": {},
+
+  "metrics": {
+    "conversations_analyzed": { "type": "gauge", "description": "Conversations from yesterday" },
+    "gaps_found": { "type": "gauge", "description": "Capability gaps identified" },
+    "skills_proposed": { "type": "counter", "description": "Skills proposed" },
+    "skills_installed": { "type": "counter", "description": "Skills installed (sandboxed)" },
+    "ideas_generated": { "type": "counter", "description": "Ideas generated" },
+    "run_duration": { "type": "gauge", "description": "Seconds per cycle" }
+  },
+
+  "guardrails": {
+    "readOnly": false,
+    "networkAccess": true,
+    "maxConcurrent": 1,
+    "approvalRequired": false
+  },
+
+  "state": {
+    "lastCheckpoint": null,
+    "custom": {}
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "skills": [
+    {
+      "name": "git_summary",
+      "description": "Summarize git repository status — branch, recent commits, uncommitted changes, and stash count.",
+      "parameters": {
+        "path": {
+          "type": "string",
+          "description": "Path to the git repository (default: current directory)",
+          "required": false
+        },
+        "commitCount": {
+          "type": "number",
+          "description": "Number of recent commits to show (default: 5)",
+          "required": false
+        }
+      },
+      "approved": true,
+      "installedAt": "2026-03-02T00:30:19.636Z",
+      "version": "1.0.0",
+      "tags": [
+        "git",
+        "vcs",
+        "development"
+      ],
+      "activatedAt": "2026-03-02T00:30:23.283Z",
+      "metrics": {
+        "callCount": 5,
+        "errorCount": 2,
+        "totalDurationMs": 472,
+        "consecutiveErrors": 0,
+        "lastCalled": "2026-03-07T11:05:47.035Z",
+        "lastError": "test error 2"
+      }
+    },
+    {
+      "name": "json_query",
+      "description": "Read a JSON file and extract values using dot-notation paths (e.g. 'users.0.name' or 'config.port').",
+      "parameters": {
+        "file": {
+          "type": "string",
+          "description": "Absolute path to the JSON file",
+          "required": true
+        },
+        "path": {
+          "type": "string",
+          "description": "Dot-notation path to extract (e.g. 'data.items.0.name'). Omit to return the whole object.",
+          "required": false
+        }
+      },
+      "approved": true,
+      "installedAt": "2026-03-02T00:30:19.636Z",
+      "version": "1.0.0",
+      "tags": [
+        "json",
+        "query",
+        "data",
+        "files"
+      ],
+      "activatedAt": "2026-03-02T00:30:23.295Z"
+    },
+    {
+      "name": "system_health",
+      "description": "Check system health — CPU load, memory usage, disk space, and uptime in a single summary.",
+      "parameters": {
+        "verbose": {
+          "type": "boolean",
+          "description": "Include per-disk and per-CPU breakdown",
+          "required": false
+        }
+      },
+      "approved": true,
+      "installedAt": "2026-03-02T00:30:19.636Z",
+      "version": "1.0.0",
+      "tags": [
+        "system",
+        "monitoring",
+        "health"
+      ],
+      "activatedAt": "2026-03-02T00:30:23.308Z",
+      "upgradedAt": "2026-03-06T11:08:06.129Z"
+    }
+  ],
+  "lastUpdated": "2026-03-07T11:05:47.035Z"
+}

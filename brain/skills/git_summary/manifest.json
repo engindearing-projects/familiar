@@ -1,0 +1,31 @@
+{
+  "name": "git_summary",
+  "version": "1.0.0",
+  "description": "Summarize git repository status — branch, recent commits, uncommitted changes, and stash count.",
+  "author": "familiar-learner",
+  "parameters": {
+    "path": {
+      "type": "string",
+      "description": "Path to the git repository (default: current directory)",
+      "required": false
+    },
+    "commitCount": {
+      "type": "number",
+      "description": "Number of recent commits to show (default: 5)",
+      "required": false
+    }
+  },
+  "sandbox": {
+    "allowNetwork": false,
+    "allowFileWrite": false,
+    "allowShell": true,
+    "maxExecutionMs": 10000
+  },
+  "tags": [
+    "git",
+    "vcs",
+    "development"
+  ],
+  "installedAt": "2026-03-02T00:30:19.636Z",
+  "installedFrom": "git-summary.json"
+}
