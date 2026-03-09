@@ -1,0 +1,58 @@
+{
+  "name": "familiar-run",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Get your familiar — AI that lives in your terminal",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/engindearing-projects/familiar.git"
+  },
+  "homepage": "https://familiar.run",
+  "keywords": [
+    "ai",
+    "terminal",
+    "cli",
+    "coding-assistant",
+    "local-ai",
+    "ollama"
+  ],
+  "bin": {
+    "familiar": "./bin/familiar.mjs"
+  },
+  "files": [
+    "bin/",
+    "commands/",
+    "lib/",
+    "src/",
+    "tui/",
+    "package.json",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "bun bin/familiar.mjs",
+    "dev": "bun --watch bin/familiar.mjs"
+  },
+  "engines": {
+    "bun": ">=1.0.0",
+    "node": ">=18.0.0"
+  },
+  "author": "Engindearing Projects",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@inkjs/ui": "^2.0.0",
+    "@opentui/core": "^0.1.80",
+    "@opentui/react": "^0.1.80",
+    "chalk": "^5.4.1",
+    "ink": "^5.2.1",
+    "ink-spinner": "^5.0.0",
+    "ink-text-input": "^6.0.0",
+    "marked": "^15.0.12",
+    "marked-terminal": "^7.3.0",
+    "ora": "^8.2.0",
+    "react": "^18.3.1",
+    "ws": "^8.18.0"
+  }
+}
