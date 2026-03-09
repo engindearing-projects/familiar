@@ -1,0 +1,39 @@
+# Environment and config
+config/.env
+config/familiar.json
+config/credentials/
+
+# Brain runtime data
+brain/tasks/
+brain/reflection/
+brain/ideas/
+brain/goals/goals.json
+brain/rag/knowledge.db
+brain/rag/knowledge.db-wal
+brain/rag/knowledge.db-shm
+brain/hands/state.json
+
+# Forge training data and models
+trainer/data/
+trainer/db/
+trainer/models/
+forge.db
+*.jsonl
+*.safetensors
+*.gguf
+
+# Logs
+logs/
+
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime
+*.pid
+*.sock
