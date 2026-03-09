@@ -1,0 +1,35 @@
+{
+  "gateway": {
+    "port": 18789,
+    "bind": "localhost",
+    "auth": {
+      "token": "REPLACE_WITH_GENERATED_TOKEN"
+    }
+  },
+  "proxy": {
+    "port": 18791
+  },
+  "ollama": {
+    "url": "http://localhost:11434",
+    "model": "familiar-brain:latest",
+    "baseModel": "llama3.2:3b",
+    "contextWindow": 131072
+  },
+  "worker": {
+    "url": null,
+    "auth_token": null
+  },
+  "forge": {
+    "autoTrain": true,
+    "pairThreshold": 100,
+    "remoteTraining": false
+  },
+  "telegram": {
+    "enabled": false,
+    "chatId": null
+  },
+  "persona": {
+    "name": "Familiar",
+    "greeting": "Hey — what are we working on?"
+  }
+}
