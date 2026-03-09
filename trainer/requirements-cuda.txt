@@ -1,0 +1,16 @@
+# The Forge — CUDA/PyTorch training dependencies
+# For Linux machines with NVIDIA GPU
+# Usage: pip install -r requirements-cuda.txt
+
+torch>=2.3.0
+transformers>=4.40.0
+peft>=0.12.0
+bitsandbytes>=0.43.0
+accelerate>=0.30.0
+datasets>=2.19.0
+trl>=0.8.0
+huggingface-hub>=0.23.0
+sentencepiece
+numpy
+safetensors
+scipy

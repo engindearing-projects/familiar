@@ -1,0 +1,16 @@
+[Unit]
+Description=The Forge — Sync collected data to Mac
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=j
+WorkingDirectory=/home/j/engie/trainer
+ExecStart=/home/j/engie/trainer/scripts/sync-to-mac.sh
+Environment=HOME=/home/j
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=forge-sync

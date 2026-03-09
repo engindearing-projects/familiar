@@ -1,0 +1,29 @@
+[Unit]
+Description=The Forge — Autonomous Data Miner
+After=network-online.target ollama.service
+Wants=network-online.target
+Requires=ollama.service
+
+[Service]
+Type=simple
+User=j
+WorkingDirectory=/home/j/engie/trainer
+ExecStart=/home/j/.bun/bin/bun mine-autonomous.mjs --daemon --cycle-delay 1800 --max-pairs 300
+Restart=on-failure
+RestartSec=30
+Environment=HOME=/home/j
+Environment=PATH=/home/j/.bun/bin:/usr/local/bin:/usr/bin:/bin
+Environment=OLLAMA_URL=http://localhost:11434
+Environment=FORGE_MODEL=familiar-brain:latest
+
+# Resource limits — let the miner breathe
+LimitNOFILE=65536
+Nice=10
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=forge-miner
+
+[Install]
+WantedBy=multi-user.target

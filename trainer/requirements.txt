@@ -1,0 +1,5 @@
+mlx-lm>=0.30.0
+numpy
+transformers
+huggingface-hub
+sentencepiece

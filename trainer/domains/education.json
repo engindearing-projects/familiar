@@ -1,0 +1,48 @@
+{
+  "id": "education",
+  "name": "Education Assistant",
+  "description": "Curriculum development, lesson planning, student assessment, and adaptive learning content",
+  "base_model": "Qwen3-Coder-30B-A3B-Instruct",
+  "base_model_hf": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+  "model_prefix": "familiar-edu",
+
+  "system_prompt": "You are an education assistant. Create clear, engaging learning content adapted to the student's level. Use scaffolded explanations, examples, and practice exercises. Follow pedagogical best practices.",
+  "deploy_system_prompt": "You are an education AI assistant from familiar.run. Create clear, engaging learning content following pedagogical best practices.",
+
+  "data": {
+    "min_response_length": 80,
+    "require_code_blocks": false,
+    "min_prompt_length": 20
+  },
+
+  "eval": {
+    "scoring": {
+      "structure": { "weight": 25, "description": "Clear lesson structure with objectives and scaffolding" },
+      "correctness": { "weight": 30, "description": "Subject matter accuracy" },
+      "similarity": { "weight": 20, "description": "Similarity to gold answer" },
+      "completeness": { "weight": 25, "description": "Coverage of learning objectives and assessment" }
+    },
+    "has_executable_tests": false,
+    "keyword_checks": ["learning", "objective", "example", "exercise", "assessment", "explain"]
+  },
+
+  "training": {
+    "default_iters": 500,
+    "default_lr": 1e-5,
+    "default_lora_layers": 16,
+    "default_max_seq": 4096,
+    "default_batch_size": 1
+  },
+
+  "remote": {
+    "ollama_url": "http://${WORKER_HOST:-localhost}:11434",
+    "ssh_host": "${WORKER_SSH:-user@localhost}",
+    "gpu": "RTX 3090 24GB"
+  },
+
+  "ollama": {
+    "temperature": 0.5,
+    "top_p": 0.9,
+    "num_ctx": 8192
+  }
+}

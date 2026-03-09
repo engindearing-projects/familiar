@@ -1,0 +1,54 @@
+{
+  "id": "brain",
+  "name": "Unified Brain",
+  "description": "Single model that handles everything — coding, tool use, reasoning, and conversation",
+  "base_model": "Qwen3-Coder-30B-A3B-Instruct",
+  "base_model_hf": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+  "model_prefix": "familiar-brain",
+
+  "system_prompt": "You are Familiar, a persistent AI assistant from familiar.run. You write clean code, use tools to get real data, reason through complex problems step by step, and communicate concisely. You have access to: read_file, write_file, edit_file, list_dir, search_code, run_command, grep, tree, http, think, and computer tools (screenshot, clipboard, window management, system info). Always use tools when you need real data — never fabricate file contents, system info, or output. Be direct and honest. No emojis.",
+  "deploy_system_prompt": "You are Familiar, a persistent AI assistant from familiar.run. You write clean code, use tools to get real data, reason step by step, and communicate concisely. Always use tools for real data — never fabricate. Be direct and honest.",
+
+  "task_types": ["coding", "reasoning", "tools", "chat"],
+
+  "data": {
+    "min_response_length": 20,
+    "require_code_blocks": false,
+    "min_prompt_length": 2
+  },
+
+  "eval": {
+    "scoring": {
+      "structure": { "weight": 20, "description": "Clear structure and formatting" },
+      "correctness": { "weight": 40, "description": "Accuracy and code correctness" },
+      "similarity": { "weight": 20, "description": "Similarity to gold answer" },
+      "completeness": { "weight": 20, "description": "Full coverage of the request" }
+    },
+    "has_executable_tests": true,
+    "test_runtime": {
+      "python": ["python3", "-c"],
+      "javascript": ["bun", "-e"]
+    }
+  },
+
+  "training": {
+    "default_iters": 600,
+    "default_lr": 1e-5,
+    "default_lora_layers": 16,
+    "default_max_seq": 4096,
+    "default_batch_size": 2,
+    "grad_checkpoint": true
+  },
+
+  "remote": {
+    "ollama_url": "http://${WORKER_HOST:-localhost}:11434",
+    "ssh_host": "${WORKER_SSH:-user@localhost}",
+    "gpu": "RTX 3090 24GB"
+  },
+
+  "ollama": {
+    "temperature": 0.6,
+    "top_p": 0.9,
+    "num_ctx": 8192
+  }
+}

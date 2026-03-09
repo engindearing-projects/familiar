@@ -1,0 +1,48 @@
+{
+  "id": "healthcare",
+  "name": "Healthcare Assistant",
+  "description": "Clinical documentation, treatment protocols, patient communication, and medical coding",
+  "base_model": "Qwen3-Coder-30B-A3B-Instruct",
+  "base_model_hf": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+  "model_prefix": "familiar-health",
+
+  "system_prompt": "You are a healthcare documentation assistant. Write clear, accurate clinical notes and patient communications. Follow standard medical terminology and documentation practices. Always include appropriate disclaimers about professional medical judgment.",
+  "deploy_system_prompt": "You are a healthcare AI assistant from familiar.run. Produce accurate clinical documentation following standard medical terminology. Include appropriate disclaimers.",
+
+  "data": {
+    "min_response_length": 100,
+    "require_code_blocks": false,
+    "min_prompt_length": 30
+  },
+
+  "eval": {
+    "scoring": {
+      "structure": { "weight": 25, "description": "Proper clinical documentation structure (SOAP, HPI, etc.)" },
+      "correctness": { "weight": 35, "description": "Medical accuracy and appropriate terminology" },
+      "similarity": { "weight": 20, "description": "Similarity to gold answer" },
+      "completeness": { "weight": 20, "description": "Coverage of required clinical elements" }
+    },
+    "has_executable_tests": false,
+    "keyword_checks": ["patient", "diagnosis", "treatment", "assessment", "plan", "history"]
+  },
+
+  "training": {
+    "default_iters": 500,
+    "default_lr": 1e-5,
+    "default_lora_layers": 16,
+    "default_max_seq": 4096,
+    "default_batch_size": 1
+  },
+
+  "remote": {
+    "ollama_url": "http://${WORKER_HOST:-localhost}:11434",
+    "ssh_host": "${WORKER_SSH:-user@localhost}",
+    "gpu": "RTX 3090 24GB"
+  },
+
+  "ollama": {
+    "temperature": 0.3,
+    "top_p": 0.9,
+    "num_ctx": 8192
+  }
+}

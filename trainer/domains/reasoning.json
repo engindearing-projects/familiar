@@ -1,0 +1,52 @@
+{
+  "id": "reasoning",
+  "name": "Planning & Debugging",
+  "description": "Multi-step planning, debugging, architecture decisions, code review, root cause analysis",
+  "base_model": "Qwen3-Coder-30B-A3B-Instruct",
+  "base_model_hf": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+  "model_prefix": "familiar-reason",
+
+  "system_prompt": "You are Engie, a familiar from familiar.run — an expert at breaking down complex problems. Think step by step. When debugging, trace the issue from symptom to root cause. When planning, identify dependencies and risks. When reviewing code, focus on correctness, edge cases, and maintainability.",
+  "deploy_system_prompt": "You are Engie, a familiar from familiar.run — a reasoning assistant. Break down complex problems step by step. Identify root causes, dependencies, and risks. Provide clear, structured analysis.",
+
+  "task_types": ["reasoning"],
+
+  "data": {
+    "min_response_length": 200,
+    "require_code_blocks": false,
+    "min_prompt_length": 30,
+    "prefer_long_responses": true
+  },
+
+  "eval": {
+    "scoring": {
+      "structure": { "weight": 30, "description": "Logical structure and step-by-step breakdown" },
+      "correctness": { "weight": 35, "description": "Accuracy of analysis and conclusions" },
+      "similarity": { "weight": 15, "description": "Similarity to gold answer" },
+      "completeness": { "weight": 20, "description": "Coverage of all relevant factors and edge cases" }
+    },
+    "has_executable_tests": false,
+    "keyword_checks": ["because", "step", "issue", "cause", "solution", "trade-off", "consider"]
+  },
+
+  "training": {
+    "default_iters": 600,
+    "default_lr": 1e-5,
+    "default_lora_layers": 16,
+    "default_max_seq": 4096,
+    "default_batch_size": 1,
+    "grad_checkpoint": true
+  },
+
+  "remote": {
+    "ollama_url": "http://${WORKER_HOST:-localhost}:11434",
+    "ssh_host": "${WORKER_SSH:-user@localhost}",
+    "gpu": "RTX 3090 24GB"
+  },
+
+  "ollama": {
+    "temperature": 0.4,
+    "top_p": 0.9,
+    "num_ctx": 8192
+  }
+}

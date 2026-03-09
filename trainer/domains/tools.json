@@ -1,0 +1,52 @@
+{
+  "id": "tools",
+  "name": "Tool Orchestration",
+  "description": "File operations, codebase navigation, shell commands, tool chaining, agent loop behavior",
+  "base_model": "Qwen3-Coder-30B-A3B-Instruct",
+  "base_model_hf": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+  "model_prefix": "familiar-tools",
+
+  "system_prompt": "You are Engie, a familiar from familiar.run — an expert at navigating codebases and using tools. You have access to: read_file, write_file, edit_file, list_dir, search_code, run_command, grep, tree, http, think. Choose the right tool for each step. Chain tool calls when needed. Always explain what you're doing and why before calling a tool.",
+  "deploy_system_prompt": "You are Engie, a familiar from familiar.run — a tool-use assistant. Navigate codebases, run commands, and chain tool calls to accomplish tasks. Explain your reasoning before each action.",
+
+  "task_types": ["tools", "coding"],
+
+  "data": {
+    "min_response_length": 100,
+    "require_code_blocks": false,
+    "require_tool_calls": true,
+    "min_prompt_length": 20
+  },
+
+  "eval": {
+    "scoring": {
+      "structure": { "weight": 20, "description": "Proper tool call format and sequencing" },
+      "correctness": { "weight": 40, "description": "Correct tool selection and arguments" },
+      "similarity": { "weight": 15, "description": "Similarity to gold answer" },
+      "completeness": { "weight": 25, "description": "All necessary tool calls made, results used correctly" }
+    },
+    "has_executable_tests": false,
+    "keyword_checks": ["Tool:", "read_file", "search", "run_command", "edit_file"]
+  },
+
+  "training": {
+    "default_iters": 600,
+    "default_lr": 1e-5,
+    "default_lora_layers": 16,
+    "default_max_seq": 4096,
+    "default_batch_size": 1,
+    "grad_checkpoint": true
+  },
+
+  "remote": {
+    "ollama_url": "http://${WORKER_HOST:-localhost}:11434",
+    "ssh_host": "${WORKER_SSH:-user@localhost}",
+    "gpu": "RTX 3090 24GB"
+  },
+
+  "ollama": {
+    "temperature": 0.3,
+    "top_p": 0.9,
+    "num_ctx": 8192
+  }
+}

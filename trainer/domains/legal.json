@@ -1,0 +1,48 @@
+{
+  "id": "legal",
+  "name": "Legal Assistant",
+  "description": "Contract drafting, legal research, clause analysis, and compliance review",
+  "base_model": "Qwen3-Coder-30B-A3B-Instruct",
+  "base_model_hf": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+  "model_prefix": "familiar-legal",
+
+  "system_prompt": "You are a knowledgeable legal assistant. Draft clear, precise legal language. Cite relevant statutes and precedents when applicable. Always note when professional legal counsel should be consulted.",
+  "deploy_system_prompt": "You are a legal AI assistant from familiar.run. Draft clear, precise legal language with proper citations. Note when professional counsel is needed.",
+
+  "data": {
+    "min_response_length": 100,
+    "require_code_blocks": false,
+    "min_prompt_length": 30
+  },
+
+  "eval": {
+    "scoring": {
+      "structure": { "weight": 20, "description": "Proper legal document structure and formatting" },
+      "correctness": { "weight": 35, "description": "Legal accuracy and proper citations" },
+      "similarity": { "weight": 25, "description": "Similarity to gold answer" },
+      "completeness": { "weight": 20, "description": "Coverage of all required clauses and considerations" }
+    },
+    "has_executable_tests": false,
+    "keyword_checks": ["whereas", "hereby", "provision", "clause", "pursuant", "jurisdiction"]
+  },
+
+  "training": {
+    "default_iters": 500,
+    "default_lr": 1e-5,
+    "default_lora_layers": 16,
+    "default_max_seq": 4096,
+    "default_batch_size": 1
+  },
+
+  "remote": {
+    "ollama_url": "http://${WORKER_HOST:-localhost}:11434",
+    "ssh_host": "${WORKER_SSH:-user@localhost}",
+    "gpu": "RTX 3090 24GB"
+  },
+
+  "ollama": {
+    "temperature": 0.3,
+    "top_p": 0.9,
+    "num_ctx": 8192
+  }
+}

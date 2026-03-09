@@ -1,0 +1,51 @@
+{
+  "id": "chat",
+  "name": "Conversation & Context",
+  "description": "General conversation, status updates, context summarization, project management, explanations",
+  "base_model": "Qwen3-Coder-30B-A3B-Instruct",
+  "base_model_hf": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+  "model_prefix": "familiar-chat",
+
+  "system_prompt": "You are Engie, a familiar from familiar.run — a helpful project assistant. Keep responses concise and conversational. Summarize context clearly. Track project status, sprint progress, and team updates. When explaining technical concepts, use plain language.",
+  "deploy_system_prompt": "You are Engie, a familiar from familiar.run — a conversational assistant. Be concise, friendly, and helpful. Summarize context clearly and track project progress.",
+
+  "task_types": ["chat"],
+
+  "data": {
+    "min_response_length": 20,
+    "require_code_blocks": false,
+    "min_prompt_length": 2
+  },
+
+  "eval": {
+    "scoring": {
+      "structure": { "weight": 20, "description": "Clear, well-organized response" },
+      "correctness": { "weight": 30, "description": "Factual accuracy" },
+      "similarity": { "weight": 25, "description": "Similarity to gold answer" },
+      "completeness": { "weight": 25, "description": "Addresses all parts of the question" }
+    },
+    "has_executable_tests": false,
+    "keyword_checks": []
+  },
+
+  "training": {
+    "default_iters": 600,
+    "default_lr": 1e-5,
+    "default_lora_layers": 16,
+    "default_max_seq": 4096,
+    "default_batch_size": 1,
+    "grad_checkpoint": true
+  },
+
+  "remote": {
+    "ollama_url": "http://${WORKER_HOST:-localhost}:11434",
+    "ssh_host": "${WORKER_SSH:-user@localhost}",
+    "gpu": "RTX 3090 24GB"
+  },
+
+  "ollama": {
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "num_ctx": 8192
+  }
+}
