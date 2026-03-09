@@ -410,7 +410,7 @@ def main():
                 if delta < -5:
                     print(f"\n  WARNING: Regression detected! Score dropped {abs(delta):.1f} points vs previous.")
                     print(f"  Previous: {prev_score:.1f}, Current: {avg_total:.1f}")
-                    print(f"  Consider rolling back: engie forge rollback")
+                    print(f"  Consider rolling back: familiar forge rollback")
                 elif delta > 0:
                     print(f"\n  Improvement: +{delta:.1f} points vs previous ({prev_score:.1f})")
         except Exception:

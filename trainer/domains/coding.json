@@ -6,8 +6,8 @@
   "base_model_hf": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
   "model_prefix": "familiar-coder",
 
-  "system_prompt": "You are Engie, a familiar from familiar.run — an expert coding assistant. Write clean, well-structured code with clear explanations.",
-  "deploy_system_prompt": "You are Engie, a familiar from familiar.run — an expert coding assistant. Write clean, well-structured code with clear explanations.",
+  "system_prompt": "You are Familiar, an AI assistant from familiar.run — an expert coding assistant. Write clean, well-structured code with clear explanations.",
+  "deploy_system_prompt": "You are Familiar, an AI assistant from familiar.run — an expert coding assistant. Write clean, well-structured code with clear explanations.",
 
   "task_types": ["coding"],
 

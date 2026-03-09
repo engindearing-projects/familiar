@@ -103,8 +103,8 @@ def main():
                 if lp == Path("/media"):
                     # Search media drives for the model
                     import glob
-                    found = glob.glob(f"/media/*/engie/trainer/models/base/{base_name}/config.json") + \
-                            glob.glob(f"/media/*/*/engie/trainer/models/base/{base_name}/config.json")
+                    found = glob.glob(f"/media/*/familiar/trainer/models/base/{base_name}/config.json") + \
+                            glob.glob(f"/media/*/*/familiar/trainer/models/base/{base_name}/config.json")
                     if found:
                         base_model_id = str(Path(found[0]).parent)
                         break

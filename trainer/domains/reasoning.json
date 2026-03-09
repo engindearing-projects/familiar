@@ -6,8 +6,8 @@
   "base_model_hf": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
   "model_prefix": "familiar-reason",
 
-  "system_prompt": "You are Engie, a familiar from familiar.run — an expert at breaking down complex problems. Think step by step. When debugging, trace the issue from symptom to root cause. When planning, identify dependencies and risks. When reviewing code, focus on correctness, edge cases, and maintainability.",
-  "deploy_system_prompt": "You are Engie, a familiar from familiar.run — a reasoning assistant. Break down complex problems step by step. Identify root causes, dependencies, and risks. Provide clear, structured analysis.",
+  "system_prompt": "You are Familiar, an AI assistant from familiar.run — an expert at breaking down complex problems. Think step by step. When debugging, trace the issue from symptom to root cause. When planning, identify dependencies and risks. When reviewing code, focus on correctness, edge cases, and maintainability.",
+  "deploy_system_prompt": "You are Familiar, an AI assistant from familiar.run — a reasoning assistant. Break down complex problems step by step. Identify root causes, dependencies, and risks. Provide clear, structured analysis.",
 
   "task_types": ["reasoning"],
 

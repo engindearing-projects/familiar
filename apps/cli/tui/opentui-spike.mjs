@@ -18,10 +18,10 @@
  *      Zero dependencies. Uses VT100 scroll regions for fixed header/footer.
  *
  * Usage:
- *   bun ~/engie/cli/tui/opentui-spike.mjs             # auto-fallback
- *   bun ~/engie/cli/tui/opentui-spike.mjs --react      # force strategy 1
- *   bun ~/engie/cli/tui/opentui-spike.mjs --core        # force strategy 2
- *   bun ~/engie/cli/tui/opentui-spike.mjs --ansi        # force strategy 3
+ *   bun ~/familiar/cli/tui/opentui-spike.mjs             # auto-fallback
+ *   bun ~/familiar/cli/tui/opentui-spike.mjs --react      # force strategy 1
+ *   bun ~/familiar/cli/tui/opentui-spike.mjs --core        # force strategy 2
+ *   bun ~/familiar/cli/tui/opentui-spike.mjs --ansi        # force strategy 3
  *
  * Findings:
  *   - @opentui/core is Bun-native, fast, true Yoga flexbox in the terminal
@@ -81,7 +81,7 @@ async function tryOpenTUIReact() {
       paddingRight: 1,
     },
       e("text", { fg: COLORS.cyan, attributes: 1 }, "● "),
-      e("text", { fg: COLORS.cyan, attributes: 1 }, "Engie"),
+      e("text", { fg: COLORS.cyan, attributes: 1 }, "Familiar"),
       e("text", { fg: COLORS.gray }, ` v${VERSION}`),
       e("text", { fg: COLORS.grayDim }, " | "),
       e("text", { fg: COLORS.green }, "gateway"),
@@ -120,7 +120,7 @@ async function tryOpenTUIReact() {
           : COLORS.white;
         const label = msg.role === "user" ? "you"
           : msg.role === "system" ? "sys"
-          : "engie";
+          : "familiar";
         return e("box", { key: `msg-${i}`, paddingLeft: 1, paddingBottom: 1 },
           e("text", null,
             e("span", { fg: roleColor, attributes: 1 }, `${label}: `),
@@ -205,7 +205,7 @@ async function tryOpenTUICore() {
   }));
   header.add(new TextRenderable(renderer, {
     id: "h-title",
-    content: "Engie",
+    content: "Familiar",
     fg: COLORS.cyan,
     attributes: TextAttributes.BOLD,
   }));
@@ -252,7 +252,7 @@ async function tryOpenTUICore() {
       : COLORS.white;
     const label = msg.role === "user" ? "you"
       : msg.role === "system" ? "sys"
-      : "engie";
+      : "familiar";
 
     const msgBox = new BoxRenderable(renderer, {
       id: `msg-${i}`,
@@ -367,7 +367,7 @@ async function tryRawAnsi() {
   function drawHeader() {
     moveTo(1, 1);
     clearLine();
-    write(`${bg(COLORS.bgBar)}${fg(COLORS.cyan)}${bold} ● Engie${reset}`);
+    write(`${bg(COLORS.bgBar)}${fg(COLORS.cyan)}${bold} ● Familiar${reset}`);
     write(`${bg(COLORS.bgBar)}${fg(COLORS.gray)} v${VERSION}`);
     write(`${fg(COLORS.grayDim)} | `);
     write(`${fg(COLORS.green)}gateway${reset}`);
@@ -398,7 +398,7 @@ async function tryRawAnsi() {
         : COLORS.white;
       const label = msg.role === "user" ? "you"
         : msg.role === "system" ? "sys"
-        : "engie";
+        : "familiar";
 
       const lines = msg.text.split("\n");
       for (let li = 0; li < lines.length; li++) {

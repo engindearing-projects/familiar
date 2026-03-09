@@ -411,6 +411,6 @@ export function getComparisonStats() {
   const total = db.prepare("SELECT COUNT(*) as count FROM comparisons").get()?.count ?? 0;
   const withGoal = db.prepare("SELECT COUNT(*) as count FROM comparisons WHERE goal IS NOT NULL").get()?.count ?? 0;
   const avgClaudeDuration = db.prepare("SELECT AVG(claude_duration_ms) as avg FROM comparisons WHERE claude_duration_ms IS NOT NULL").get()?.avg ?? 0;
-  const avgEngieDuration = db.prepare("SELECT AVG(engie_duration_ms) as avg FROM comparisons WHERE engie_duration_ms IS NOT NULL").get()?.avg ?? 0;
-  return { total, withGoal, avgClaudeDuration: Math.round(avgClaudeDuration), avgEngieDuration: Math.round(avgEngieDuration) };
+  const avgLocalDuration = db.prepare("SELECT AVG(engie_duration_ms) as avg FROM comparisons WHERE engie_duration_ms IS NOT NULL").get()?.avg ?? 0;
+  return { total, withGoal, avgClaudeDuration: Math.round(avgClaudeDuration), avgLocalDuration: Math.round(avgLocalDuration) };
 }

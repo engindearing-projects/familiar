@@ -742,8 +742,8 @@ install_launchd() {
   local DOMAIN_TARGET="gui/$(id -u)"
   mkdir -p "$LA_DIR"
 
-  local services
-  mapfile -t services < <(get_install_list)
+  local services=()
+  while IFS= read -r line; do services+=("$line"); done < <(get_install_list)
 
   echo ""
   echo "  Familiar - Service Installer (macOS launchd)"
@@ -767,8 +767,8 @@ install_systemd() {
   local UNIT_DIR="$HOME/.config/systemd/user"
   mkdir -p "$UNIT_DIR"
 
-  local services
-  mapfile -t services < <(get_install_list)
+  local services=()
+  while IFS= read -r line; do services+=("$line"); done < <(get_install_list)
 
   echo ""
   echo "  Familiar - Service Installer (Linux systemd)"

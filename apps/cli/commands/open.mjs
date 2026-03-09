@@ -168,7 +168,7 @@ export async function run({ args }) {
           monitorId = monitorPane?.id || monitorPane?.surface_id;
 
           if (monitorId) {
-            await client.surfaceSendText(monitorId, `cd ${cwd} && bun ~/engie/services/monitor.mjs\n`);
+            await client.surfaceSendText(monitorId, `cd ${cwd} && bun ~/familiar/services/monitor.mjs\n`);
           }
         } catch {
           // Monitor split failed — non-fatal, continue without it

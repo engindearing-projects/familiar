@@ -5,6 +5,7 @@ import { existsSync, readFileSync } from "fs";
 import { join } from "path";
 
 const HOME = process.env.HOME || "/tmp";
+// COZYTERM_HOME and ENGIE_HOME are legacy fallbacks — kept for backward compat
 const FAMILIAR_HOME = process.env.FAMILIAR_HOME || process.env.COZYTERM_HOME || process.env.ENGIE_HOME || join(HOME, ".familiar");
 const KEYBINDINGS_PATH = join(FAMILIAR_HOME, "keybindings.json");
 

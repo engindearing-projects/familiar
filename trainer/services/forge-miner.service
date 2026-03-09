@@ -7,7 +7,7 @@ Requires=ollama.service
 [Service]
 Type=simple
 User=j
-WorkingDirectory=/home/j/engie/trainer
+WorkingDirectory=/home/j/familiar/trainer
 ExecStart=/home/j/.bun/bin/bun mine-autonomous.mjs --daemon --cycle-delay 1800 --max-pairs 300
 Restart=on-failure
 RestartSec=30

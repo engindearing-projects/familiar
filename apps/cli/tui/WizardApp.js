@@ -940,7 +940,7 @@ export function WizardApp() {
           LITE_MODE
             ? e(Box, { flexDirection: "column", marginTop: 1 },
                 e(Text, { color: colors.cyan }, "For the full stack (gateway, tools, memory, training):"),
-                e(Text, { color: colors.gray }, "  git clone https://github.com/engindearing-projects/engie.git ~/familiar"),
+                e(Text, { color: colors.gray }, "  git clone https://github.com/engindearing-projects/familiar.git ~/familiar"),
                 e(Text, { color: colors.gray }, "  cd ~/familiar && ./setup.sh")
               )
             : null

@@ -139,7 +139,7 @@ async function callOllama(prompt) {
           {
             role: "system",
             content:
-              "You are Engie, a familiar from familiar.run — an expert coding assistant. Write clean, well-structured code with clear explanations.",
+              "You are Familiar, an AI assistant from familiar.run — an expert coding assistant. Write clean, well-structured code with clear explanations.",
           },
           { role: "user", content: prompt },
         ],

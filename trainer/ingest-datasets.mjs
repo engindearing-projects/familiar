@@ -353,7 +353,7 @@ async function main() {
 
   console.log(`\nTotal ingested: ${totalCollected} pairs across ${datasets.length} datasets`);
   console.log(`Output directory: ${OUTPUT_DIR}`);
-  console.log("\nNext: run 'engie forge train' to include these in training data");
+  console.log("\nNext: run 'familiar forge train' to include these in training data");
 }
 
 main().catch(e => {

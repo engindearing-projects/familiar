@@ -6,8 +6,8 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 User=j
-WorkingDirectory=/home/j/engie/trainer
-ExecStart=/home/j/engie/trainer/scripts/sync-to-mac.sh
+WorkingDirectory=/home/j/familiar/trainer
+ExecStart=/home/j/familiar/trainer/scripts/sync-to-mac.sh
 Environment=HOME=/home/j
 Environment=PATH=/usr/local/bin:/usr/bin:/bin
 

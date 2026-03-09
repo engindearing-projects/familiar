@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "engie",
+      "name": "familiar-run",
       "dependencies": {
         "@inkjs/ui": "^2.0.0",
         "@opentui/core": "^0.1.80",

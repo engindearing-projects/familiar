@@ -198,7 +198,7 @@ function formatTestFeedback(testResults) {
 
 async function iterateOnTask(task) {
   const systemPrompt =
-    "You are Engie, a familiar from familiar.run — an expert coding assistant. Write clean, correct code. " +
+    "You are Familiar, an AI assistant from familiar.run — an expert coding assistant. Write clean, correct code. " +
     "When given test failures, analyze the errors carefully and fix your code. " +
     "Always output your complete solution in a single fenced code block.";
 

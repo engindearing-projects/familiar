@@ -4,6 +4,7 @@ import { join, dirname } from "path";
 import { getThemeName, setTheme, onThemeChange, listThemes } from "../lib/theme.js";
 
 const HOME = process.env.HOME || "/tmp";
+// COZYTERM_HOME and ENGIE_HOME are legacy fallbacks — kept for backward compat
 const FAMILIAR_HOME = process.env.FAMILIAR_HOME || process.env.COZYTERM_HOME || process.env.ENGIE_HOME || join(HOME, ".familiar");
 const CONFIG_PATH = join(FAMILIAR_HOME, "config.json");
 

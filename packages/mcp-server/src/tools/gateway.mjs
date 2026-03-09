@@ -16,7 +16,7 @@ const CLAUDE_PROXY_URL = process.env.CLAUDE_PROXY_URL || "http://127.0.0.1:18791
 for (const configPath of [
   process.env.FAMILIAR_CONFIG,
   join(FAMILIAR_HOME, "config", "familiar.json"),
-  // Dev: check if we're inside the engie repo
+  // Dev: check if we're inside the familiar repo
   resolve(import.meta.dir, "../../../../config/familiar.json"),
 ]) {
   if (configPath && existsSync(configPath)) {

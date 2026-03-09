@@ -5,6 +5,7 @@ import { existsSync, readFileSync, readdirSync, mkdirSync } from "fs";
 import { join } from "path";
 
 const HOME = process.env.HOME || "/tmp";
+// COZYTERM_HOME and ENGIE_HOME are legacy fallbacks — kept for backward compat
 const FAMILIAR_HOME = process.env.FAMILIAR_HOME || process.env.COZYTERM_HOME || process.env.ENGIE_HOME || join(HOME, ".familiar");
 const THEMES_DIR = join(FAMILIAR_HOME, "themes");
 const CONFIG_PATH = join(FAMILIAR_HOME, "config.json");
@@ -184,9 +185,10 @@ function getSavedTheme() {
 
 /**
  * Resolve active theme name from env var or config file.
- * Priority: FAMILIAR_THEME env > ENGIE_THEME env > config.json > "familiar"
+ * Priority: FAMILIAR_THEME env > ENGIE_THEME (legacy fallback) > config.json > "familiar"
  */
 function resolveThemeName() {
+  // ENGIE_THEME is a legacy fallback — kept for backward compat
   return process.env.FAMILIAR_THEME || process.env.ENGIE_THEME || getSavedTheme() || "familiar";
 }
 
